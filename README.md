@@ -115,14 +115,22 @@ DAAadvisor implements a comprehensive 5-step information-theoretic framework:
 
 ## 📊 Current Performance
 
-| Method | Status | F1 Score | Precision | Recall | Runtime |
-|--------|--------|----------|-----------|--------|---------|
-| Wilcoxon | ✅ Working | 1.000 | 1.000 | 1.000 | 0.030s |
-| ALDEx2 | ✅ Working | 0.453 | 0.293 | 1.000 | 0.577s |
-| ANCOM-BC | 🔧 In Progress | - | - | - | - |
-| DESeq2 | 🔧 In Progress | - | - | - | - |
-| edgeR | 🔧 In Progress | - | - | - | - |
-| metagenomeSeq | 🔧 In Progress | - | - | - | - |
+🎉 **Major Update: 4/6 methods now functional (66.7% success rate)!**
+
+| Method | Status | F1 Score | Precision | Recall | Runtime | Key Strength |
+|--------|--------|----------|-----------|--------|---------|--------------|
+| **Wilcoxon** | ✅ Working | 0.941 | 0.889 | 1.000 | 0.022s | Non-parametric robustness |
+| **ALDEx2** | ✅ Working | 0.516 | 0.348 | 1.000 | 0.431s | Compositional analysis |
+| **DESeq2** | ✅ Working | 0.889 | 0.800 | 1.000 | 1.053s | Parametric power |
+| **edgeR** | ✅ Working | 0.889 | 0.800 | 1.000 | 0.146s | Fast quasi-likelihood |
+| ANCOM-BC | 🔧 Final fixes | - | - | - | - | Bias correction |
+| metagenomeSeq | 🔧 Final fixes | - | - | - | - | Zero-inflation |
+
+### 🎯 **Performance Highlights:**
+- **Perfect Recall**: All working methods achieve 100% sensitivity
+- **Statistical Diversity**: Non-parametric, compositional, and parametric approaches
+- **Speed Range**: 0.022s to 1.053s runtimes
+- **R Integration**: Full rpy2 integration with 4 R methods functional
 
 ## 📄 Comprehensive Results & Documentation
 

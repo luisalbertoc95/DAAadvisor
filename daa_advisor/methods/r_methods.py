@@ -323,32 +323,53 @@ class ANCOMBCMethod(RMethodBase):
         logger.info(f"Running ANCOM-BC with {len(count_table)} samples and {len(count_table.columns)} features")
         
         try:
-            # Create TreeSummarizedExperiment object
-            r_counts = self._convert_to_r(count_table.T.astype(int))  # Features x samples
-            r_metadata = self._convert_to_r(metadata)
+            # Convert data to R with proper handling
+            with localconverter(robjects.default_converter + pandas2ri.converter):
+                r_counts = robjects.conversion.py2rpy(count_table.T.astype(int))  # Features x samples
+                r_metadata = robjects.conversion.py2rpy(metadata)
             
-            # Create TSE object
+            # Create TreeSummarizedExperiment object for ANCOM-BC v2
+            logger.info("Creating TreeSummarizedExperiment object...")
             r("""
-            create_tse <- function(counts, metadata) {
+            create_tse_ancombc <- function(counts, metadata) {
                 library(TreeSummarizedExperiment)
+                library(SummarizedExperiment)
+                
+                # Ensure proper matrix format
+                count_matrix <- as.matrix(counts)
+                rownames(count_matrix) <- paste0("Feature_", 1:nrow(count_matrix))
+                colnames(count_matrix) <- rownames(metadata)
+                
+                # Create TSE object
                 tse <- TreeSummarizedExperiment(
-                    assays = list(counts = as.matrix(counts)),
+                    assays = list(counts = count_matrix),
                     colData = metadata
                 )
                 return(tse)
             }
             """)
             
-            r_tse = r['create_tse'](r_counts, r_metadata)
+            r_tse = r['create_tse_ancombc'](r_counts, r_metadata)
             
-            # Run ANCOM-BC
-            logger.info("Running ANCOM-BC analysis...")
-            r_results = ancombc.ancombc(
-                phyloseq=r_tse,
-                formula=formula,
-                alpha=alpha,
-                **kwargs
-            )
+            # Run ANCOM-BC using ancombc2 (newer version)
+            logger.info("Running ANCOM-BC2 analysis...")
+            try:
+                # Try ancombc2 first (newer version)
+                r_results = ancombc.ancombc2(
+                    data=r_tse,
+                    fix_formula=formula,
+                    alpha=alpha,
+                    **kwargs
+                )
+            except:
+                # Fallback to original ancombc with correct parameter
+                logger.info("Falling back to original ancombc...")
+                r_results = ancombc.ancombc(
+                    data=r_tse,
+                    formula=formula,
+                    alpha=alpha,
+                    **kwargs
+                )
             
             # Extract results
             r_res_table = r_results.rx2('res')
@@ -485,8 +506,36 @@ class DESeq2Method(RMethodBase):
             
             # Get results
             r_results = deseq2.results(r_dds)
-            with localconverter(robjects.default_converter + pandas2ri.converter):
-                results_df = robjects.conversion.rpy2py(r_results)
+            
+            # Convert R S4 object to DataFrame properly
+            logger.info("Converting DESeq2 results to DataFrame...")
+            try:
+                # First convert to R data.frame
+                r_df = robjects.r['as.data.frame'](r_results)
+                
+                # Then convert to pandas
+                with localconverter(robjects.default_converter + pandas2ri.converter):
+                    results_df = robjects.conversion.rpy2py(r_df)
+                
+                # Ensure we have a proper DataFrame
+                if not isinstance(results_df, pd.DataFrame):
+                    # Manual creation if needed
+                    data_dict = {}
+                    for col_name in r_df.colnames:
+                        data_dict[col_name] = list(r_df.rx2(col_name))
+                    results_df = pd.DataFrame(data_dict)
+                    
+            except Exception as e:
+                logger.warning(f"DataFrame conversion failed: {e}, trying alternative method")
+                # Alternative conversion method
+                results_df = pd.DataFrame({
+                    'baseMean': list(r_results.rx2('baseMean')),
+                    'log2FoldChange': list(r_results.rx2('log2FoldChange')),
+                    'lfcSE': list(r_results.rx2('lfcSE')),
+                    'stat': list(r_results.rx2('stat')),
+                    'pvalue': list(r_results.rx2('pvalue')),
+                    'padj': list(r_results.rx2('padj'))
+                })
             
             # Standardize output format
             if 'log2FoldChange' in results_df.columns:
@@ -604,9 +653,10 @@ class EdgeRMethod(RMethodBase):
         logger.info(f"Running edgeR with {len(count_table)} samples and {len(count_table.columns)} features")
         
         try:
-            # Convert data to R
-            r_counts = self._convert_to_r(count_table.T.astype(int))  # Features x samples
-            r_metadata = self._convert_to_r(metadata)
+            # Convert data to R with proper handling
+            with localconverter(robjects.default_converter + pandas2ri.converter):
+                r_counts = robjects.conversion.py2rpy(count_table.T.astype(int))  # Features x samples
+                r_metadata = robjects.conversion.py2rpy(metadata)
             
             # Create DGEList object
             logger.info("Creating DGEList object...")
@@ -616,8 +666,20 @@ class EdgeRMethod(RMethodBase):
             logger.info(f"Calculating normalization factors using {normalization}...")
             r_dge = edger.calcNormFactors(r_dge, method=normalization)
             
-            # Create design matrix
-            r_design = r(f'model.matrix({formula}, data=samples(dge))')  
+            # Store DGE object in R environment to avoid scoping issues
+            r.assign('dge_obj', r_dge)
+            
+            # Create design matrix using direct function call
+            logger.info("Creating design matrix...")
+            # Get samples data from DGE object
+            r_samples_data = r_dge.rx2('samples')
+            r_design = robjects.r['model.matrix'](
+                robjects.Formula(formula), 
+                data=r_samples_data
+            )
+            
+            # Store design matrix in R environment
+            r.assign('design_matrix', r_design)
             
             # Estimate dispersions
             logger.info("Estimating dispersions...")
@@ -630,7 +692,11 @@ class EdgeRMethod(RMethodBase):
             
             # Get results
             r_results = edger.topTags(r_test, n=robjects.NULL)
-            results_df = self._convert_from_r(r_results.rx2('table'))
+            
+            # Convert results with proper handling
+            with localconverter(robjects.default_converter + pandas2ri.converter):
+                r_table = r_results.rx2('table')
+                results_df = robjects.conversion.rpy2py(r_table)
             
             # Standardize output format
             if 'logFC' in results_df.columns:
@@ -739,22 +805,34 @@ class MetagenomeSeqMethod(RMethodBase):
         logger.info(f"Running metagenomeSeq with {len(count_table)} samples and {len(count_table.columns)} features")
         
         try:
-            # Convert data to R
-            r_counts = self._convert_to_r(count_table.T.astype(int))  # Features x samples
-            r_metadata = self._convert_to_r(metadata)
+            # Convert data to R with proper handling
+            with localconverter(robjects.default_converter + pandas2ri.converter):
+                r_counts = robjects.conversion.py2rpy(count_table.T.astype(int))  # Features x samples
+                r_metadata = robjects.conversion.py2rpy(metadata)
             
             # Create MRexperiment object
             logger.info("Creating MRexperiment object...")
             r_phenotype = biobase.AnnotatedDataFrame(r_metadata)
             r_mr = mgs.newMRexperiment(counts=r_counts, phenoData=r_phenotype)
             
+            # Store MR object in R environment to avoid scoping issues
+            r.assign('mr_obj', r_mr)
+            
             # Normalize data if requested
             if normalization == "CSS":
                 logger.info("Performing cumulative sum scaling (CSS) normalization...")
                 r_mr = mgs.cumNorm(r_mr)
+                r.assign('mr_obj', r_mr)  # Update stored object
             
-            # Create design matrix
-            r_design = r(f'model.matrix({formula}, data=pData(mr))')
+            # Create design matrix using direct function call
+            logger.info("Creating design matrix...")
+            # Get phenotype data from MR object
+            r_pheno_data = r_mr.rx2('phenoData')
+            r_pdata = biobase.pData(r_pheno_data)
+            r_design = robjects.r['model.matrix'](
+                robjects.Formula(formula), 
+                data=r_pdata
+            )
             
             # Fit zero-inflated log-normal model
             logger.info("Fitting zero-inflated log-normal model...")
@@ -762,7 +840,10 @@ class MetagenomeSeqMethod(RMethodBase):
             
             # Get results
             r_results = mgs.MRcoefs(r_fit, number=robjects.NULL)
-            results_df = self._convert_from_r(r_results)
+            
+            # Convert results with proper handling
+            with localconverter(robjects.default_converter + pandas2ri.converter):
+                results_df = robjects.conversion.rpy2py(r_results)
             
             # Standardize output format
             if 'logFC' in results_df.columns:

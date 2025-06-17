@@ -11,25 +11,30 @@
 - **Intelligent Method Selection**: Algorithm that recommends best methods based on data profiling
 - **Data Profiling**: Comprehensive analysis of sparsity, zero-inflation, compositional bias
 - **Multiple Data Types**: Support for ASV/16S, gene/functional, and viral data
+- **R Method Integration**: Complete implementations of ALDEx2, ANCOM-BC, DESeq2, edgeR, metagenomeSeq
+- **Information Theory Framework**: Unified entropy-based analysis with compositional geometry
+- **Advanced Method Selection**: Maximum entropy principle for principled method choice
 - **Visualization Suite**: Volcano plots, data characteristics, method comparisons, interactive dashboards
 - **Benchmarking Framework**: Performance evaluation across methods and datasets
-- **CLI Interface**: Complete command-line tool with 7 commands
+- **CLI Interface**: Complete command-line tool with 8 commands including info-theory
 - **Test Suite**: 23 comprehensive tests covering all functionality
 - **Data Generators**: Realistic microbiome data simulation for testing
+- **Consensus Analysis**: Voting-based method combination with uncertainty metrics
 
 ### 🔧 In Progress
-- **R Method Integration**: Framework ready, individual method implementations pending
-- **Documentation**: Basic README complete, comprehensive docs needed
+- **Enhanced Consensus**: Information-theoretic weighted consensus and meta-analysis
+- **Advanced Visualizations**: Information geometry plots and entropy landscapes
 
 ### 📋 Next Development Priorities
 
-1. **Complete R Method Implementations**
-   - ALDEx2, ANCOM-BC, DESeq2, edgeR, metagenomeSeq wrappers
-   - Proper R environment handling and error management
+1. **Information-Theoretic Consensus Enhancement**
+   - Weight methods by information preservation
+   - Bayesian uncertainty quantification
+   - Meta-analysis statistical framework
 
 2. **Enhanced Documentation**
    - API documentation with Sphinx
-   - Tutorial notebooks
+   - Tutorial notebooks showing R methods and IT framework
    - Method comparison studies
 
 3. **Community Features**
@@ -53,16 +58,17 @@ DAAadvisor/
 │   ├── core.py              # 🔑 Main orchestrator class
 │   ├── profiler.py          # 🔑 Data characteristics analysis
 │   ├── selector.py          # 🔑 Intelligent method selection
+│   ├── information_theory.py # 🔑 Unified entropy-based framework
 │   ├── visualization.py     # 🔑 Comprehensive plotting suite
 │   ├── benchmarking.py      # 🔑 Performance evaluation framework
 │   ├── data_generators.py   # 🔑 Realistic data simulation
-│   ├── cli.py              # 🔑 Command-line interface
+│   ├── cli.py              # 🔑 Command-line interface (8 commands)
 │   └── methods/            # Statistical method implementations
 │       ├── __init__.py
 │       ├── base.py         # Abstract method interface
 │       ├── registry.py     # Method registration system
 │       ├── wilcoxon.py     # Non-parametric method
-│       └── r_methods.py    # R-based method wrappers
+│       └── r_methods.py    # 🔑 Complete R integration (5 methods)
 │
 ├── 🧪 Testing & Examples
 │   ├── tests/
@@ -104,7 +110,10 @@ DAAadvisor/
 
 ```bash
 # Core analysis
-daaadvisor analyze counts.csv metadata.csv --data-type asv
+daaadvisor analyze counts.csv metadata.csv --data-type asv --consensus
+
+# Information theory analysis
+daaadvisor info-theory counts.csv metadata.csv --group-column condition
 
 # Data exploration
 daaadvisor profile counts.csv metadata.csv

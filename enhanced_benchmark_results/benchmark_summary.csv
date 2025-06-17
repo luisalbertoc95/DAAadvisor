@@ -1,0 +1,16 @@
+dataset,method,data_type,challenge,n_samples,n_features,sparsity,failed,true_positives,false_positives,false_negatives,precision,recall,f1_score,fpr,runtime
+asv_standard,wilcoxon,asv,standard,100,200,0.82885,False,0,0,20,0.0,0.0,0.0,0.0,0.06822085380554199
+gene_standard,wilcoxon,gene,standard,80,500,0.405175,False,16,0,34,1.0,0.32,0.48484848484848486,0.0,0.14430809020996094
+viral_standard,wilcoxon,viral,standard,60,150,0.9887777777777778,False,0,0,10,0.0,0.0,0.0,0.0,0.031239986419677734
+asv_unbalanced,wilcoxon,asv,unbalanced,60,200,0.8288333333333333,False,0,0,20,0.0,0.0,0.0,0.0,0.06226706504821777
+asv_small_effect,wilcoxon,asv,small_effect,100,200,0.82885,False,0,0,5,0.0,0.0,0.0,0.0,0.06841778755187988
+asv_confounded,wilcoxon,asv,confounded,100,200,0.8335,False,0,0,20,0.0,0.0,0.0,0.0,0.06796002388000488
+asv_small_sample,wilcoxon,asv,small_sample,20,100,0.8165,False,0,0,20,0.0,0.0,0.0,0.0,0.03242683410644531
+gene_unbalanced,wilcoxon,gene,unbalanced,60,500,0.40253333333333335,False,0,0,50,0.0,0.0,0.0,0.0,0.13922810554504395
+gene_small_effect,wilcoxon,gene,small_effect,80,500,0.404725,False,0,0,5,0.0,0.0,0.0,0.0,0.14249610900878906
+gene_confounded,wilcoxon,gene,confounded,80,500,0.40445,False,11,0,39,1.0,0.22,0.36065573770491804,0.0,0.14202475547790527
+gene_small_sample,wilcoxon,gene,small_sample,20,100,0.401,False,2,0,48,1.0,0.04,0.07692307692307693,0.0,0.032701969146728516
+viral_unbalanced,wilcoxon,viral,unbalanced,60,150,0.9887777777777778,False,0,0,10,0.0,0.0,0.0,0.0,0.030987977981567383
+viral_small_effect,wilcoxon,viral,small_effect,60,150,0.9931111111111111,False,0,0,5,0.0,0.0,0.0,0.0,0.029747962951660156
+viral_confounded,wilcoxon,viral,confounded,60,150,0.9887777777777778,False,0,0,10,0.0,0.0,0.0,0.0,0.03238511085510254
+viral_small_sample,wilcoxon,viral,small_sample,20,100,0.985,False,0,0,10,0.0,0.0,0.0,0.0,0.019292116165161133

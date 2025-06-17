@@ -1,0 +1,12 @@
+DAAadvisor Comprehensive Gene Analysis Summary
+==================================================
+
+Dataset: 40 samples × 80 features
+Groups: {'Healthy': 20, 'Disease': 20}
+
+Method Results:
+  wilcoxon: 1 significant features
+  Information Theory: 20 significant features
+
+Recommended method: deseq2
+Method confidence: 1.795

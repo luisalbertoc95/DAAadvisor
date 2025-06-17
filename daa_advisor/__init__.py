@@ -22,6 +22,7 @@ from .selector import MethodSelector
 from .visualization import DAAVisualizer, create_comprehensive_report
 from .benchmarking import MethodBenchmark, run_full_benchmark
 from .data_generators import MicrobiomeDataGenerator, create_benchmark_datasets
+from .information_theory import CompositionInformationFramework, MaximumEntropySelector, run_information_theory_analysis
 
 __all__ = [
     'DifferentialAbundanceTool',
@@ -32,5 +33,8 @@ __all__ = [
     'MethodBenchmark',
     'run_full_benchmark',
     'MicrobiomeDataGenerator',
-    'create_benchmark_datasets'
+    'create_benchmark_datasets',
+    'CompositionInformationFramework',
+    'MaximumEntropySelector',
+    'run_information_theory_analysis'
 ]

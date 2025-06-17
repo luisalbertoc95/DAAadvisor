@@ -535,6 +535,276 @@ class DESeq2Method(RMethodBase):
                 "Genome Biology, 15(12), 550.")
 
 
+class EdgeRMethod(RMethodBase):
+    """edgeR implementation for differential abundance analysis"""
+    
+    def name(self) -> str:
+        return "edger"
+    
+    def get_required_r_packages(self) -> list:
+        return ["edgeR"]
+    
+    def run(self, 
+            count_table: pd.DataFrame, 
+            metadata: pd.DataFrame, 
+            formula: Optional[str] = None,
+            group_column: Optional[str] = None,
+            normalization: str = "TMM",
+            **kwargs) -> pd.DataFrame:
+        """
+        Run edgeR analysis
+        
+        Parameters:
+        -----------
+        count_table : pd.DataFrame
+            Samples x Features count matrix
+        metadata : pd.DataFrame
+            Sample metadata
+        formula : str, optional
+            Design formula
+        group_column : str, optional
+            Column name for grouping variable
+        normalization : str
+            Normalization method ('TMM', 'TMMwsp', 'RLE', 'upperquartile', 'none')
+        """
+        
+        self.validate_input(count_table, metadata)
+        count_table, metadata = self._prepare_data_for_r(count_table, metadata)
+        
+        # Import edgeR
+        edger = importr("edgeR")
+        
+        # Determine grouping column
+        if group_column is None:
+            group_column = metadata.columns[0]
+            logger.info(f"Using '{group_column}' as grouping variable")
+        
+        if formula is None:
+            formula = f"~ {group_column}"
+            logger.info(f"Using design formula: {formula}")
+        
+        logger.info(f"Running edgeR with {len(count_table)} samples and {len(count_table.columns)} features")
+        
+        try:
+            # Convert data to R
+            r_counts = self._convert_to_r(count_table.T.astype(int))  # Features x samples
+            r_metadata = self._convert_to_r(metadata)
+            
+            # Create DGEList object
+            logger.info("Creating DGEList object...")
+            r_dge = edger.DGEList(counts=r_counts, samples=r_metadata)
+            
+            # Calculate normalization factors
+            logger.info(f"Calculating normalization factors using {normalization}...")
+            r_dge = edger.calcNormFactors(r_dge, method=normalization)
+            
+            # Create design matrix
+            r_design = r(f'model.matrix({formula}, data=samples(dge))')  
+            
+            # Estimate dispersions
+            logger.info("Estimating dispersions...")
+            r_dge = edger.estimateDisp(r_dge, r_design)
+            
+            # Fit model and test
+            logger.info("Fitting negative binomial GLM...")
+            r_fit = edger.glmQLFit(r_dge, r_design)
+            r_test = edger.glmQLFTest(r_fit, coef=2)  # Test second coefficient (treatment effect)
+            
+            # Get results
+            r_results = edger.topTags(r_test, n=robjects.NULL)
+            results_df = self._convert_from_r(r_results.rx2('table'))
+            
+            # Standardize output format
+            if 'logFC' in results_df.columns:
+                results_df['log2fc'] = results_df['logFC']
+            if 'PValue' in results_df.columns:
+                results_df['pvalue'] = results_df['PValue']
+            if 'FDR' in results_df.columns:
+                results_df['padj'] = results_df['FDR']
+            if 'F' in results_df.columns:
+                results_df['statistic'] = results_df['F']
+            elif 'LR' in results_df.columns:
+                results_df['statistic'] = results_df['LR']
+            
+            # Add feature names
+            results_df['feature'] = count_table.columns
+            results_df = results_df.reset_index(drop=True)
+            
+            # Sort by p-value
+            results_df = results_df.sort_values('pvalue')
+            
+            logger.info(f"edgeR analysis complete. Found {(results_df['padj'] < 0.05).sum()} significant features")
+            
+            return self.standardize_output(results_df)
+            
+        except Exception as e:
+            logger.error(f"edgeR analysis failed: {e}")
+            raise RuntimeError(f"edgeR analysis failed: {e}")
+    
+    def get_parameters(self) -> Dict[str, Any]:
+        """Get method parameters"""
+        return {
+            'group_column': {
+                'type': str,
+                'default': None,
+                'description': 'Column name for grouping variable'
+            },
+            'formula': {
+                'type': str,
+                'default': None,
+                'description': 'Design formula (e.g., "~ group + batch")'
+            },
+            'normalization': {
+                'type': str,
+                'default': 'TMM',
+                'choices': ['TMM', 'TMMwsp', 'RLE', 'upperquartile', 'none'],
+                'description': 'Normalization method'
+            }
+        }
+    
+    def cite(self) -> str:
+        """Return citation information"""
+        return ("Robinson, M.D., McCarthy, D.J. & Smyth, G.K. (2010). edgeR: "
+                "a Bioconductor package for differential expression analysis of "
+                "digital gene expression data. Bioinformatics, 26(1), 139-140.")
+
+
+class MetagenomeSeqMethod(RMethodBase):
+    """metagenomeSeq implementation for differential abundance analysis"""
+    
+    def name(self) -> str:
+        return "metagenomeseq"
+    
+    def get_required_r_packages(self) -> list:
+        return ["metagenomeSeq"]
+    
+    def run(self, 
+            count_table: pd.DataFrame, 
+            metadata: pd.DataFrame, 
+            formula: Optional[str] = None,
+            group_column: Optional[str] = None,
+            normalization: str = "CSS",
+            **kwargs) -> pd.DataFrame:
+        """
+        Run metagenomeSeq analysis
+        
+        Parameters:
+        -----------
+        count_table : pd.DataFrame
+            Samples x Features count matrix
+        metadata : pd.DataFrame
+            Sample metadata
+        formula : str, optional
+            Design formula
+        group_column : str, optional
+            Column name for grouping variable
+        normalization : str
+            Normalization method ('CSS', 'none')
+        """
+        
+        self.validate_input(count_table, metadata)
+        count_table, metadata = self._prepare_data_for_r(count_table, metadata)
+        
+        # Import metagenomeSeq
+        mgs = importr("metagenomeSeq")
+        biobase = importr("Biobase")
+        
+        # Determine grouping column
+        if group_column is None:
+            group_column = metadata.columns[0]
+            logger.info(f"Using '{group_column}' as grouping variable")
+        
+        if formula is None:
+            formula = f"~ {group_column}"
+            logger.info(f"Using design formula: {formula}")
+        
+        logger.info(f"Running metagenomeSeq with {len(count_table)} samples and {len(count_table.columns)} features")
+        
+        try:
+            # Convert data to R
+            r_counts = self._convert_to_r(count_table.T.astype(int))  # Features x samples
+            r_metadata = self._convert_to_r(metadata)
+            
+            # Create MRexperiment object
+            logger.info("Creating MRexperiment object...")
+            r_phenotype = biobase.AnnotatedDataFrame(r_metadata)
+            r_mr = mgs.newMRexperiment(counts=r_counts, phenoData=r_phenotype)
+            
+            # Normalize data if requested
+            if normalization == "CSS":
+                logger.info("Performing cumulative sum scaling (CSS) normalization...")
+                r_mr = mgs.cumNorm(r_mr)
+            
+            # Create design matrix
+            r_design = r(f'model.matrix({formula}, data=pData(mr))')
+            
+            # Fit zero-inflated log-normal model
+            logger.info("Fitting zero-inflated log-normal model...")
+            r_fit = mgs.fitZig(obj=r_mr, mod=r_design)
+            
+            # Get results
+            r_results = mgs.MRcoefs(r_fit, number=robjects.NULL)
+            results_df = self._convert_from_r(r_results)
+            
+            # Standardize output format
+            if 'logFC' in results_df.columns:
+                results_df['log2fc'] = results_df['logFC']
+            elif 'coef' in results_df.columns:
+                results_df['log2fc'] = results_df['coef']
+            if 'pvalues' in results_df.columns:
+                results_df['pvalue'] = results_df['pvalues']
+            if 'adjPvalues' in results_df.columns:
+                results_df['padj'] = results_df['adjPvalues']
+            else:
+                # Calculate FDR if not available
+                from statsmodels.stats.multitest import multipletests
+                _, padj, _, _ = multipletests(results_df['pvalue'], method='fdr_bh')
+                results_df['padj'] = padj
+            if 'se' in results_df.columns:
+                results_df['statistic'] = results_df['log2fc'] / results_df['se']
+            
+            # Add feature names
+            results_df['feature'] = count_table.columns
+            results_df = results_df.reset_index(drop=True)
+            
+            # Sort by p-value
+            results_df = results_df.sort_values('pvalue')
+            
+            logger.info(f"metagenomeSeq analysis complete. Found {(results_df['padj'] < 0.05).sum()} significant features")
+            
+            return self.standardize_output(results_df)
+            
+        except Exception as e:
+            logger.error(f"metagenomeSeq analysis failed: {e}")
+            raise RuntimeError(f"metagenomeSeq analysis failed: {e}")
+    
+    def get_parameters(self) -> Dict[str, Any]:
+        """Get method parameters"""
+        return {
+            'group_column': {
+                'type': str,
+                'default': None,
+                'description': 'Column name for grouping variable'
+            },
+            'formula': {
+                'type': str,
+                'default': None,
+                'description': 'Design formula (e.g., "~ group + batch")'
+            },
+            'normalization': {
+                'type': str,
+                'default': 'CSS',
+                'choices': ['CSS', 'none'],
+                'description': 'Normalization method'
+            }
+        }
+    
+    def cite(self) -> str:
+        """Return citation information"""
+        return ("Paulson, J.N., et al. (2013). Differential abundance analysis for "
+                "microbial marker-gene surveys. Nature Methods, 10(12), 1200-1202.")
+
+
 # Function to check R package availability
 def check_r_package_availability():
     """Check which R packages are available"""
@@ -544,7 +814,9 @@ def check_r_package_availability():
     packages_to_check = {
         'ALDEx2': ALDEx2Method,
         'ANCOMBC': ANCOMBCMethod, 
-        'DESeq2': DESeq2Method
+        'DESeq2': DESeq2Method,
+        'edgeR': EdgeRMethod,
+        'metagenomeSeq': MetagenomeSeqMethod
     }
     
     available_methods = {}

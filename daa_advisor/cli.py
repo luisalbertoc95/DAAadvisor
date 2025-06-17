@@ -305,6 +305,88 @@ def benchmark(output, quick, data_types):
 
 
 @main.command()
+@click.argument('count_table', type=click.Path(exists=True))
+@click.argument('metadata', type=click.Path(exists=True))
+@click.option('--group-column', default=None, help='Column for grouping (auto-detect if not specified)')
+@click.option('--output', '-o', default='info_theory_results', help='Output directory')
+@click.option('--alpha', default=0.05, type=float, help='Significance threshold')
+def info_theory(count_table, metadata, group_column, output, alpha):
+    """
+    Run information theory-based differential abundance analysis
+    
+    COUNT_TABLE: Path to count matrix CSV
+    METADATA: Path to metadata CSV
+    """
+    
+    click.echo("🧮 Information Theory Analysis")
+    
+    try:
+        # Load data
+        counts = pd.read_csv(count_table, index_col=0)
+        meta = pd.read_csv(metadata, index_col=0)
+        
+        # Auto-detect group column if not specified
+        if group_column is None:
+            group_column = meta.columns[0]
+            click.echo(f"Using '{group_column}' as grouping variable")
+        
+        # Run information theory analysis
+        from .information_theory import run_information_theory_analysis
+        
+        click.echo("Running information theory framework...")
+        results = run_information_theory_analysis(
+            count_table=counts,
+            metadata=meta,
+            group_column=group_column,
+            alpha=alpha
+        )
+        
+        # Create output directory
+        output_path = Path(output)
+        output_path.mkdir(exist_ok=True)
+        
+        # Save results
+        da_results = results['differential_abundance_results']
+        da_results.to_csv(output_path / 'info_theory_results.csv', index=False)
+        
+        # Save method selection info
+        method_info = results['method_selection']
+        with open(output_path / 'method_selection.txt', 'w') as f:
+            f.write(f"Recommended method: {method_info['recommended_method']}\n")
+            f.write(f"Confidence score: {method_info['score']:.3f}\n")
+            f.write(f"Reasoning: {method_info['reasoning']}\n\n")
+            
+            f.write("Information Metrics:\n")
+            for key, value in method_info['information_metrics'].items():
+                f.write(f"  {key}: {value:.3f}\n")
+        
+        # Print summary
+        info_summary = results['information_summary']
+        significant = da_results[da_results['padj'] < alpha]
+        
+        click.echo("\n" + "="*50)
+        click.echo("INFORMATION THEORY ANALYSIS RESULTS")
+        click.echo("="*50)
+        click.echo(f"Total features: {info_summary['total_features']}")
+        click.echo(f"Significant features: {len(significant)} (α = {alpha})")
+        click.echo(f"Information entropy: {info_summary['information_entropy']:.3f}")
+        click.echo(f"Compositional constraint: {info_summary['compositional_constraint']:.3f}")
+        click.echo(f"\nRecommended method: {method_info['recommended_method']}")
+        click.echo(f"Method confidence: {method_info['score']:.3f}")
+        
+        if len(significant) > 0:
+            click.echo(f"\nTop 5 features by information divergence:")
+            for _, row in significant.head().iterrows():
+                click.echo(f"  {row['feature']}: divergence={row['information_divergence']:.3f}, p={row['pvalue']:.2e}")
+        
+        click.echo(f"\n✅ Results saved to: {output_path}")
+        
+    except Exception as e:
+        click.echo(f"❌ Error: {e}", err=True)
+        sys.exit(1)
+
+
+@main.command()
 @click.option('--output', '-o', default='test_results', help='Output directory')
 def test(output):
     """Run comprehensive test suite"""

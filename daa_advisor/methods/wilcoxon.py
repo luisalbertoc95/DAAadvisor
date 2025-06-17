@@ -154,7 +154,7 @@ class WilcoxonMethod(DAAMethod):
             results_df['padj'] = np.nan
         
         # Sort by p-value
-        results_df = results_df.sort_values('pvalue', na_last=True)
+        results_df = results_df.sort_values('pvalue')
         
         return self.standardize_output(results_df)
     

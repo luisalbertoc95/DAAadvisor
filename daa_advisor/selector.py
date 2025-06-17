@@ -127,7 +127,7 @@ class MethodSelector:
         }
     
     def _load_decision_rules(self) -> Dict:
-        """Load decision tree rules for method selection"""inactive
+        """Load decision tree rules for method selection"""
         return {
             'viral': {
                 'high_sparsity': 'zicoseq',

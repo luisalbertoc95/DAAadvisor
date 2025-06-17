@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="daaadvisor_logo.png" alt="DAAadvisor Logo" width="400"/>
+</p>
+
 # DAAadvisor
 
 **Differential Abundance Analysis Advisor for Microbiome Data**

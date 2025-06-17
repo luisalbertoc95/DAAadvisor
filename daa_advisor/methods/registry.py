@@ -29,49 +29,22 @@ class MethodRegistry:
     def _try_register_r_methods(self):
         """Attempt to register R-based methods if available"""
         try:
-            # Try importing R interface
-            import rpy2.robjects as robjects
-            from rpy2.robjects import pandas2ri
-            pandas2ri.activate()
+            # Import and check available R methods
+            from .r_methods import check_r_package_availability
+            available_methods = check_r_package_availability()
             
-            # Check for required R packages
-            r_packages = {
-                'ALDEx2': 'aldex2',
-                'ANCOMBC': 'ancom-bc', 
-                'DESeq2': 'deseq2',
-                'edgeR': 'edger',
-                'metagenomeSeq': 'metagenomeseq'
-            }
-            
-            available_packages = []
-            for r_pkg, method_name in r_packages.items():
+            # Register each available method
+            for method_name, method_class in available_methods.items():
                 try:
-                    robjects.r(f'library({r_pkg})')
-                    available_packages.append((r_pkg, method_name))
-                    logger.info(f"R package {r_pkg} available")
-                except Exception:
-                    logger.warning(f"R package {r_pkg} not available")
-            
-            # Register available R methods
-            for r_pkg, method_name in available_packages:
-                try:
-                    if method_name == 'aldex2':
-                        from .r_methods import ALDEx2Method
-                        self.register_method(ALDEx2Method())
-                    elif method_name == 'ancom-bc':
-                        from .r_methods import ANCOMBCMethod
-                        self.register_method(ANCOMBCMethod())
-                    elif method_name == 'deseq2':
-                        from .r_methods import DESeq2Method
-                        self.register_method(DESeq2Method())
-                    # Add other R methods as they are implemented
-                except ImportError as e:
-                    logger.warning(f"Could not import {method_name}: {e}")
+                    self.register_method(method_class())
+                    logger.info(f"Successfully registered R method: {method_name}")
+                except Exception as e:
+                    logger.warning(f"Failed to register {method_name}: {e}")
                     
         except ImportError:
-            logger.warning("rpy2 not available, R methods will not be registered")
+            logger.warning("R methods module not available")
         except Exception as e:
-            logger.warning(f"Error registering R methods: {e}")
+            logger.warning(f"Error checking R methods: {e}")
     
     def register_method(self, method: DAAMethod):
         """Register a new method"""

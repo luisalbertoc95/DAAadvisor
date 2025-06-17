@@ -19,9 +19,18 @@ __email__ = "support@daaadvisor.org"
 from .core import DifferentialAbundanceTool
 from .profiler import DataProfiler
 from .selector import MethodSelector
+from .visualization import DAAVisualizer, create_comprehensive_report
+from .benchmarking import MethodBenchmark, run_full_benchmark
+from .data_generators import MicrobiomeDataGenerator, create_benchmark_datasets
 
 __all__ = [
     'DifferentialAbundanceTool',
     'DataProfiler', 
-    'MethodSelector'
+    'MethodSelector',
+    'DAAVisualizer',
+    'create_comprehensive_report',
+    'MethodBenchmark',
+    'run_full_benchmark',
+    'MicrobiomeDataGenerator',
+    'create_benchmark_datasets'
 ]

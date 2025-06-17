@@ -163,50 +163,172 @@ def methods():
 @click.option('--features', default=200, help='Number of features')
 @click.option('--sparsity', default=0.7, help='Sparsity level (0-1)')
 @click.option('--output', default='example_data', help='Output directory')
-def generate_example(samples, features, sparsity, output):
+@click.option('--data-type', type=click.Choice(['asv', 'gene', 'viral']), default='asv', help='Type of data to generate')
+def generate_example(samples, features, sparsity, output, data_type):
     """Generate example data for testing"""
     
-    import numpy as np
+    from .data_generators import MicrobiomeDataGenerator
     
-    click.echo(f"🎲 Generating example data")
+    click.echo(f"🎲 Generating {data_type} example data")
     click.echo(f"Samples: {samples}, Features: {features}, Sparsity: {sparsity}")
     
-    # Set seed for reproducibility
-    np.random.seed(42)
+    generator = MicrobiomeDataGenerator(random_seed=42)
     
-    # Generate count data with specified sparsity
-    counts = np.random.negative_binomial(5, 0.3, size=(samples, features))
-    
-    # Add zeros for sparsity
-    zero_mask = np.random.random((samples, features)) < sparsity
-    counts[zero_mask] = 0
-    
-    # Create count table
-    count_df = pd.DataFrame(
-        counts,
-        index=[f"Sample_{i+1}" for i in range(samples)],
-        columns=[f"ASV_{i+1}" for i in range(features)]
-    )
-    
-    # Create metadata
-    metadata_df = pd.DataFrame({
-        'condition': ['Control'] * (samples//2) + ['Treatment'] * (samples//2),
-        'batch': np.random.choice(['A', 'B'], samples),
-        'age': np.random.randint(20, 70, samples)
-    }, index=count_df.index)
+    if data_type == 'asv':
+        count_table, metadata, diff_features = generator.generate_asv_data(
+            n_samples=samples, n_features=features, sparsity=sparsity
+        )
+    elif data_type == 'gene':
+        count_table, metadata, diff_features = generator.generate_gene_data(
+            n_samples=samples, n_features=features, sparsity=sparsity
+        )
+    else:  # viral
+        count_table, metadata, diff_features = generator.generate_viral_data(
+            n_samples=samples, n_features=features, sparsity=sparsity
+        )
     
     # Create output directory
     output_path = Path(output)
     output_path.mkdir(exist_ok=True)
     
     # Save files
-    count_df.to_csv(output_path / 'counts.csv')
-    metadata_df.to_csv(output_path / 'metadata.csv')
+    count_table.to_csv(output_path / 'counts.csv')
+    metadata.to_csv(output_path / 'metadata.csv')
+    
+    # Save ground truth
+    with open(output_path / 'differential_features.txt', 'w') as f:
+        f.write('\n'.join(diff_features))
     
     click.echo(f"✅ Example data saved to: {output_path}")
-    click.echo(f"  - counts.csv: {count_df.shape}")
-    click.echo(f"  - metadata.csv: {metadata_df.shape}")
+    click.echo(f"  - counts.csv: {count_table.shape}")
+    click.echo(f"  - metadata.csv: {metadata.shape}")
+    click.echo(f"  - differential_features.txt: {len(diff_features)} features")
     click.echo(f"\nTo analyze: daaadvisor analyze {output_path}/counts.csv {output_path}/metadata.csv")
+
+
+@main.command()
+@click.argument('count_table', type=click.Path(exists=True))
+@click.argument('metadata', type=click.Path(exists=True))
+@click.option('--output', '-o', default='visualization_report', help='Output directory')
+@click.option('--data-type', type=click.Choice(['asv', 'gene', 'viral']), help='Data type')
+@click.option('--interactive', is_flag=True, help='Create interactive dashboard')
+def visualize(count_table, metadata, output, data_type, interactive):
+    """
+    Create comprehensive visualizations for your data
+    
+    COUNT_TABLE: Path to count matrix CSV
+    METADATA: Path to metadata CSV
+    """
+    
+    click.echo("📊 Creating visualizations...")
+    
+    try:
+        # Load data and run analysis
+        counts = pd.read_csv(count_table, index_col=0)
+        meta = pd.read_csv(metadata, index_col=0)
+        
+        tool = DifferentialAbundanceTool()
+        results = tool.analyze(
+            count_table=counts,
+            metadata=meta,
+            data_type=data_type,
+            use_consensus=True
+        )
+        
+        # Create visualizations
+        from .visualization import create_comprehensive_report
+        create_comprehensive_report(results, output)
+        
+        click.echo(f"✅ Visualizations created in: {output}")
+        click.echo(f"  - Data characteristics plot")
+        click.echo(f"  - Volcano plots")
+        if len(results['analyses']) > 1:
+            click.echo(f"  - Method comparison plots")
+        if interactive:
+            click.echo(f"  - Interactive dashboard: {output}/interactive_dashboard.html")
+        
+    except Exception as e:
+        click.echo(f"❌ Error: {e}", err=True)
+        sys.exit(1)
+
+
+@main.command()
+@click.option('--output', '-o', default='benchmark_results', help='Output directory')
+@click.option('--quick', is_flag=True, help='Run quick benchmark (fewer datasets)')
+@click.option('--data-types', default='asv,gene,viral', help='Comma-separated data types to test')
+def benchmark(output, quick, data_types):
+    """
+    Run comprehensive method benchmarking
+    """
+    
+    click.echo("🏁 Starting comprehensive benchmarking...")
+    
+    try:
+        from .benchmarking import run_full_benchmark
+        from .data_generators import create_benchmark_datasets, MicrobiomeDataGenerator
+        
+        # Create datasets
+        if quick:
+            # Quick benchmark with smaller datasets
+            generator = MicrobiomeDataGenerator()
+            datasets = {}
+            
+            for data_type in data_types.split(','):
+                if data_type == 'asv':
+                    datasets[f'{data_type}_quick'] = generator.generate_asv_data(
+                        n_samples=30, n_features=50, n_differential=5
+                    )
+                elif data_type == 'gene':
+                    datasets[f'{data_type}_quick'] = generator.generate_gene_data(
+                        n_samples=30, n_features=50, n_differential=5
+                    )
+                elif data_type == 'viral':
+                    datasets[f'{data_type}_quick'] = generator.generate_viral_data(
+                        n_samples=30, n_features=50, n_differential=5
+                    )
+        else:
+            # Full benchmark
+            datasets = None  # Will generate all benchmark datasets
+        
+        # Run benchmark
+        results = run_full_benchmark(output)
+        
+        click.echo(f"✅ Benchmark complete! Results in: {output}")
+        click.echo(f"  - Summary CSV")
+        click.echo(f"  - Performance plots")
+        click.echo(f"  - Interactive dashboard")
+        click.echo(f"  - Detailed report")
+        
+    except Exception as e:
+        click.echo(f"❌ Error: {e}", err=True)
+        sys.exit(1)
+
+
+@main.command()
+@click.option('--output', '-o', default='test_results', help='Output directory')
+def test(output):
+    """Run comprehensive test suite"""
+    
+    click.echo("🧪 Running comprehensive tests...")
+    
+    try:
+        # Import and run tests
+        from tests.test_comprehensive import run_comprehensive_tests
+        
+        success = run_comprehensive_tests()
+        
+        if success:
+            click.echo("✅ All tests passed!")
+        else:
+            click.echo("❌ Some tests failed!")
+            sys.exit(1)
+            
+    except ImportError:
+        click.echo("❌ Test module not found. Run from package root directory.")
+        sys.exit(1)
+    except Exception as e:
+        click.echo(f"❌ Error running tests: {e}", err=True)
+        sys.exit(1)
 
 
 if __name__ == '__main__':

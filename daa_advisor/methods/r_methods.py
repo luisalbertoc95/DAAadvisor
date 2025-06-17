@@ -83,6 +83,14 @@ class RMethodBase(DAAMethod):
             logger.warning(f"Removing {(~valid_features).sum()} features with zero counts")
             count_table = count_table.loc[:, valid_features]
         
+        # For DESeq2 specifically, also filter features that are zero in >80% of samples
+        if hasattr(self, 'name') and self.name() == 'deseq2':
+            zero_fraction = (count_table == 0).sum(axis=0) / len(count_table)
+            high_expr_features = zero_fraction < 0.8
+            if not high_expr_features.all():
+                logger.warning(f"Removing {(~high_expr_features).sum()} features with >80% zeros for DESeq2")
+                count_table = count_table.loc[:, high_expr_features]
+        
         return count_table, metadata
     
     def _convert_to_r(self, data):
@@ -158,9 +166,10 @@ class ALDEx2Method(RMethodBase):
         logger.info(f"Groups: {unique_conditions[0]} ({(conditions == unique_conditions[0]).sum()}) vs {unique_conditions[1]} ({(conditions == unique_conditions[1]).sum()})")
         
         try:
-            # Convert data to R
-            r_counts = self._convert_to_r(count_table.T)  # ALDEx2 expects features x samples
-            r_conditions = self._convert_to_r(conditions.values)
+            # Convert data to R with proper handling
+            with localconverter(robjects.default_converter + pandas2ri.converter):
+                r_counts = robjects.conversion.py2rpy(count_table.T)  # ALDEx2 expects features x samples
+                r_conditions = robjects.StrVector(conditions.values)
             
             # Run ALDEx2 CLR transformation
             logger.info(f"Performing CLR transformation with {mc_samples} Monte Carlo samples...")
@@ -450,9 +459,17 @@ class DESeq2Method(RMethodBase):
         logger.info(f"Running DESeq2 with {len(count_table)} samples and {len(count_table.columns)} features")
         
         try:
+            # For very sparse data, add small pseudocount to avoid DESeq2 issues
+            count_matrix = count_table.T.astype(int)
+            zero_fraction = (count_matrix == 0).sum().sum() / (count_matrix.shape[0] * count_matrix.shape[1])
+            if zero_fraction > 0.7:
+                logger.info(f"High sparsity ({zero_fraction:.1%}), adding pseudocount of 1")
+                count_matrix = count_matrix + 1
+            
             # Convert data to R
-            r_counts = self._convert_to_r(count_table.T.astype(int))  # Features x samples
-            r_metadata = self._convert_to_r(metadata)
+            with localconverter(robjects.default_converter + pandas2ri.converter):
+                r_counts = robjects.conversion.py2rpy(count_matrix)  # Features x samples
+                r_metadata = robjects.conversion.py2rpy(metadata)
             
             # Create DESeq2 dataset
             logger.info("Creating DESeqDataSet...")
@@ -468,7 +485,8 @@ class DESeq2Method(RMethodBase):
             
             # Get results
             r_results = deseq2.results(r_dds)
-            results_df = self._convert_from_r(r_results)
+            with localconverter(robjects.default_converter + pandas2ri.converter):
+                results_df = robjects.conversion.rpy2py(r_results)
             
             # Standardize output format
             if 'log2FoldChange' in results_df.columns:

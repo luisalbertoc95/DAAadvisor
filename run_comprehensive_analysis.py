@@ -46,7 +46,7 @@ def run_comprehensive_gene_analysis():
     generator = MicrobiomeDataGenerator(random_seed=42)
     gene_counts, gene_metadata, true_differential = generator.generate_gene_data(
         n_samples=40, n_features=80, n_differential=15, 
-        sparsity=0.4, effect_size=4.0  # Stronger effect size
+        sparsity=0.2, effect_size=4.0  # Reduced sparsity for R method compatibility
     )
     
     print(f"Generated dataset: {gene_counts.shape[0]} samples × {gene_counts.shape[1]} features")

@@ -13,7 +13,7 @@ An intelligent tool that automatically selects the best statistical method for y
 - **🧠 Intelligent Method Selection**: Information-theoretic framework with maximum entropy principle for optimal method selection
 - **📊 Comprehensive Data Profiling**: Analyzes sparsity, zero-inflation, compositional bias, and other key metrics
 - **🔄 Multi-Method Support**: Integrates 6 statistical methods with full R integration (ALDEx2, ANCOM-BC, DESeq2, edgeR, metagenomeSeq, Wilcoxon)
-- **🎯 Consensus Analysis**: Voting-based consensus combining results from multiple methods
+- **🎯 Advanced Consensus Analysis**: Sophisticated voting strategies with confidence scoring and agreement metrics
 - **📈 Rich Visualizations**: Interactive HTML dashboards, method comparisons, and publication-ready plots
 - **🧮 Information Theory Framework**: Complete entropy-based analysis with Jensen-Shannon divergence (✅ Validated)
 - **⚡ Easy to Use**: Simple Python API with intelligent defaults and comprehensive testing
@@ -102,10 +102,12 @@ DAAadvisor implements a comprehensive 5-step information-theoretic framework:
 - **edgeR**: TMM normalization with quasi-likelihood
 - **metagenomeSeq**: Zero-inflated log-normal modeling
 
-### 4. **🤝 Consensus Integration**
-- **Majority Voting**: Features significant in ≥50% of methods
-- **Agreement Metrics**: Inter-method concordance quantification
-- **Weighted Confidence**: Method agreement-based scoring
+### 4. **🤝 Advanced Consensus Analysis** ✅ **COMPLETED**
+- **Sophisticated Voting Strategies**: Simple majority, weighted reliability, ranked scoring
+- **Inter-Method Agreement**: Cohen's kappa quantification (κ = 0.436 moderate agreement)
+- **Confidence Scoring**: Method concordance-based confidence with uncertainty quantification
+- **Consensus Strength Classification**: Strong/Moderate/Weak/Conflicting evidence categories
+- **Method Reliability Weighting**: Benchmarked performance-based voting weights
 
 ### 5. **📈 Results & Visualization**
 - **Interactive HTML Dashboards**: Comprehensive reporting
@@ -147,6 +149,13 @@ DAAadvisor implements a comprehensive 5-step information-theoretic framework:
 - **Disease Progression**: Healthy→Disease→Recovery modeling validated
 - **Multi-factorial Designs**: Complex treatment×gender×age interactions supported
 - **Comprehensive Testing**: All advanced metadata types validated with real datasets
+
+### 🤝 **Advanced Consensus Analysis** ✅ **COMPLETED**
+- **Multiple Voting Strategies**: Simple (50% threshold), weighted (method reliability), ranked (effect size weighted)
+- **Agreement Quantification**: Cohen's kappa inter-method concordance (κ = 0.436 moderate agreement typical)
+- **Confidence Scoring**: Multi-factor confidence including method agreement, p-value consistency, effect size consistency
+- **Consensus Classification**: Strong/Moderate/Weak/Conflicting evidence strength categories
+- **Uncertainty Quantification**: Confidence intervals and uncertainty measures for all consensus calls
 
 ## 📄 Comprehensive Results & Documentation
 

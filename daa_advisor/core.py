@@ -11,6 +11,7 @@ import logging
 from .profiler import DataProfiler
 from .selector import MethodSelector
 from .methods import MethodRegistry
+from .consensus import AdvancedConsensusAnalyzer
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,7 @@ class DifferentialAbundanceTool:
         self.profiler = DataProfiler()
         self.selector = MethodSelector()
         self.method_registry = MethodRegistry()
+        self.consensus_analyzer = AdvancedConsensusAnalyzer()
         self.results = {}
     
     def analyze(self, 
@@ -88,8 +90,10 @@ class DifferentialAbundanceTool:
         
         # Generate consensus results if multiple methods were run
         if len(results['analyses']) > 1:
-            logger.info("Generating consensus results...")
-            results['consensus'] = self._generate_consensus(results['analyses'])
+            logger.info("Generating advanced consensus results...")
+            consensus_results = self.consensus_analyzer.generate_advanced_consensus(results['analyses'])
+            results['consensus'] = consensus_results['consensus_features']
+            results['consensus_metrics'] = consensus_results['agreement_metrics']
         
         self.results = results
         return results
@@ -164,8 +168,20 @@ class DifferentialAbundanceTool:
         if 'consensus' in self.results:
             consensus = self.results['consensus']
             n_consensus_sig = consensus['consensus_significant'].sum()
-            print(f"\nConsensus Results:")
-            print(f"  - {n_consensus_sig} features significant in majority of methods")
+            print(f"\nAdvanced Consensus Results:")
+            print(f"  - {n_consensus_sig} features significant in consensus analysis")
+            
+            if 'consensus_metrics' in self.results:
+                metrics = self.results['consensus_metrics']
+                if 'mean_kappa' in metrics:
+                    print(f"  - Inter-method agreement (κ): {metrics['mean_kappa']:.3f} ({metrics['kappa_interpretation']})")
+                if 'majority_agreement' in metrics:
+                    print(f"  - Majority agreement: {metrics['majority_agreement']:.1%}")
+                    
+            # Show consensus strength distribution
+            if 'consensus_strength' in consensus.columns:
+                strength_counts = consensus['consensus_strength'].value_counts()
+                print(f"  - Consensus strength: {dict(strength_counts)}")
     
     def get_significant_features(self, alpha: float = 0.05, method: str = None) -> pd.DataFrame:
         """Get significant features from analysis results"""

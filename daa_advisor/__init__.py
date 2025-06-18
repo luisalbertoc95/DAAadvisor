@@ -25,6 +25,7 @@ from .data_generators import MicrobiomeDataGenerator, create_benchmark_datasets
 from .information_theory import CompositionInformationFramework, MaximumEntropySelector, run_information_theory_analysis
 from .preprocessing import InformationBasedPreprocessor, apply_information_preprocessing
 from .adaptive_thresholds import AdaptiveThresholdSelector, apply_adaptive_thresholds
+from .consensus import AdvancedConsensusAnalyzer, generate_advanced_consensus
 
 __all__ = [
     'DifferentialAbundanceTool',
@@ -42,5 +43,7 @@ __all__ = [
     'InformationBasedPreprocessor',
     'apply_information_preprocessing',
     'AdaptiveThresholdSelector',
-    'apply_adaptive_thresholds'
+    'apply_adaptive_thresholds',
+    'AdvancedConsensusAnalyzer',
+    'generate_advanced_consensus'
 ]

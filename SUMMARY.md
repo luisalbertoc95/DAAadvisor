@@ -154,13 +154,21 @@ daaadvisor test
 - **Statistical Diversity**: Non-parametric, compositional, and parametric approaches
 - **rpy2 Integration**: Robust pandas↔R DataFrame conversion with error handling
 
-### Method Performance Statistics
+### Method Integration Testing (Controlled Test Data)
 | Method | Status | F1 Score | Precision | Recall | Runtime | Strength |
 |--------|--------|----------|-----------|--------|---------|----------|
 | **Wilcoxon** | ✅ Working | 0.941 | 0.889 | 1.000 | 0.022s | Non-parametric |
 | **ALDEx2** | ✅ Working | 0.516 | 0.348 | 1.000 | 0.431s | Compositional |
 | **DESeq2** | ✅ Working | 0.889 | 0.800 | 1.000 | 1.053s | Parametric power |
 | **edgeR** | ✅ Working | 0.889 | 0.800 | 1.000 | 0.146s | Fast quasi-likelihood |
+
+### Real-World Benchmark Performance
+| Method | Success Rate | Avg F1 Score | Runtime | Real-World Strength |
+|--------|--------------|---------------|---------|---------------------|
+| **Wilcoxon** | 100.0% | 0.074 | 0.13s | Most reliable |
+| **DESeq2** | 66.7% | 0.441 | 0.83s | Best detection |
+| **metagenomeSeq** | 83.3% | 0.153 | 0.56s | Zero-inflation |
+| **edgeR** | 100.0% | 0.052 | 0.96s | TMM robust |
 
 ### Method Selection Algorithm
 - **Smart scoring system** based on data characteristics

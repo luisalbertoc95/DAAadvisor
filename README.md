@@ -119,21 +119,21 @@ DAAadvisor implements a comprehensive 5-step information-theoretic framework:
 
 ### 🏆 **Real-World Benchmark Results** (6 datasets, 42 test scenarios)
 
-| Method | Success Rate | Best F1 Score | Avg Runtime | Key Strength |
+| Method | Success Rate | Avg F1 Score | Avg Runtime | Key Strength |
 |--------|--------------|---------------|-------------|--------------|
-| **Wilcoxon** | 100.0% | 1.000 | 0.13s | Most reliable across all scenarios |
-| **edgeR** | 100.0% | 0.714 | 0.96s | Robust TMM normalization |
-| **ALDEx2** | 100.0% | 0.426 | 4.06s | Compositional analysis excellence |
-| **metagenomeSeq** | 83.3% | 0.952 | 0.56s | Best for zero-inflated data |
-| **DESeq2** | 66.7% | **1.000** | 0.83s | Perfect on viral datasets |
+| **Wilcoxon** | 100.0% | 0.074 | 0.13s | Most reliable across all scenarios |
+| **edgeR** | 100.0% | 0.052 | 0.96s | Robust TMM normalization |
+| **ALDEx2** | 100.0% | 0.000 | 4.06s | Compositional analysis excellence |
+| **metagenomeSeq** | 83.3% | 0.153 | 0.56s | Best for zero-inflated data |
+| **DESeq2** | 66.7% | 0.441 | 0.83s | Moderate performance on complex data |
 | **ANCOM-BC** | 33.3% | 0.000 | 43.27s | Ultra-conservative bias correction |
 
 ### 🎯 **Validation Highlights:**
 - **Large-Scale Testing**: Up to 200 samples × 1000 features
-- **Perfect Performance**: DESeq2 achieved F1=1.000 on sparse viral data  
-- **Universal Reliability**: Wilcoxon and edgeR work across all data types
-- **Overall Success**: 73.8% success rate across diverse real-world scenarios
-- **Consensus Analysis**: 95.2% F1 score with multi-method integration
+- **Realistic Performance**: Most methods achieve moderate F1 scores (0.05-0.44) on challenging real-world data
+- **Universal Reliability**: Wilcoxon and edgeR work across all data types (100% success rate)
+- **Method Diversity**: DESeq2 shows best differential detection capability (F1=0.441)
+- **Robust Integration**: All 6 statistical methods successfully integrated with Python
 
 ### 🧮 **Information Theory Framework Validation** ✅ **COMPLETED**
 - **Mathematical Framework**: Shannon entropy, Jensen-Shannon divergence fully validated

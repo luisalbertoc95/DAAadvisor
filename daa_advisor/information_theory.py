@@ -311,27 +311,46 @@ class CompositionInformationFramework:
         }
     
     def _calculate_entropy(self, data: np.ndarray) -> float:
-        """Calculate entropy of a data distribution"""
-        # Discretize for entropy calculation
-        n_bins = min(10, len(data) // 3) if len(data) > 10 else len(data)
+        """Calculate entropy of a data distribution
         
-        if n_bins <= 1:
-            return 0.0
+        For probability distributions (compositional data), calculate Shannon entropy directly.
+        For count data, use histogram discretization.
+        """
+        # Check if data is already a probability distribution (sums to ~1)
+        data_sum = np.sum(data)
+        is_probability = np.abs(data_sum - 1.0) < 1e-6
         
-        counts, _ = np.histogram(data, bins=n_bins)
-        # Remove zero counts
-        counts = counts[counts > 0]
+        if is_probability:
+            # Data is already a probability distribution - calculate Shannon entropy directly
+            # Add small regularization to avoid log(0)
+            data_reg = data + self.regularization
+            data_reg = data_reg / np.sum(data_reg)  # Re-normalize after regularization
+            
+            # Calculate Shannon entropy: H(X) = -sum(p(x) * log2(p(x)))
+            entropy = -np.sum(data_reg * np.log2(data_reg))
+            return entropy
         
-        if len(counts) == 0:
-            return 0.0
-        
-        # Normalize to probabilities
-        probabilities = counts / np.sum(counts)
-        
-        # Calculate entropy
-        entropy = -np.sum(probabilities * np.log2(probabilities))
-        
-        return entropy
+        else:
+            # Data is count/continuous data - use histogram discretization
+            n_bins = min(10, len(data) // 3) if len(data) > 10 else len(data)
+            
+            if n_bins <= 1:
+                return 0.0
+            
+            counts, _ = np.histogram(data, bins=n_bins)
+            # Remove zero counts
+            counts = counts[counts > 0]
+            
+            if len(counts) == 0:
+                return 0.0
+            
+            # Normalize to probabilities
+            probabilities = counts / np.sum(counts)
+            
+            # Calculate entropy
+            entropy = -np.sum(probabilities * np.log2(probabilities))
+            
+            return entropy
     
     def _calculate_kl_divergence(self, data1: np.ndarray, data2: np.ndarray) -> float:
         """Calculate KL divergence between two data distributions"""

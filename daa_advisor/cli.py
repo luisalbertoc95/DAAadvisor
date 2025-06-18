@@ -5,6 +5,7 @@ Command-line interface for DAAadvisor
 
 import click
 import pandas as pd
+import numpy as np
 import logging
 import sys
 from pathlib import Path
@@ -364,22 +365,20 @@ def info_theory(count_table, metadata, group_column, output, alpha):
         info_summary = results['information_summary']
         significant = da_results[da_results['padj'] < alpha]
         
-        click.echo("\n" + "="*50)
-        click.echo("INFORMATION THEORY ANALYSIS RESULTS")
-        click.echo("="*50)
-        click.echo(f"Total features: {info_summary['total_features']}")
-        click.echo(f"Significant features: {len(significant)} (α = {alpha})")
-        click.echo(f"Information entropy: {info_summary['information_entropy']:.3f}")
-        click.echo(f"Compositional constraint: {info_summary['compositional_constraint']:.3f}")
-        click.echo(f"\nRecommended method: {method_info['recommended_method']}")
-        click.echo(f"Method confidence: {method_info['score']:.3f}")
+        click.echo(f"\n✅ Information theory analysis complete!")
+        click.echo(f"📊 Analyzed {info_summary['total_features']} features")
+        click.echo(f"📈 Found {len(significant)} significant features (α = {alpha})")
+        click.echo(f"🧮 Mean information entropy: {info_summary['information_entropy']:.3f}")
+        click.echo(f"🔬 Compositional constraint: {info_summary['compositional_constraint']:.3f}")
+        click.echo(f"🎯 Recommended method: {method_info['recommended_method']}")
+        click.echo(f"📊 Method confidence: {method_info['score']:.3f}")
         
         if len(significant) > 0:
-            click.echo(f"\nTop 5 features by information divergence:")
+            click.echo(f"\n🔍 Top 5 features by information divergence:")
             for _, row in significant.head().iterrows():
                 click.echo(f"  {row['feature']}: divergence={row['information_divergence']:.3f}, p={row['pvalue']:.2e}")
         
-        click.echo(f"\n✅ Results saved to: {output_path}")
+        click.echo(f"\n📁 Results saved to: {output_path}")
         
     except Exception as e:
         click.echo(f"❌ Error: {e}", err=True)

@@ -23,6 +23,8 @@ from .visualization import DAAVisualizer, create_comprehensive_report
 from .benchmarking import MethodBenchmark, run_full_benchmark
 from .data_generators import MicrobiomeDataGenerator, create_benchmark_datasets
 from .information_theory import CompositionInformationFramework, MaximumEntropySelector, run_information_theory_analysis
+from .preprocessing import InformationBasedPreprocessor, apply_information_preprocessing
+from .adaptive_thresholds import AdaptiveThresholdSelector, apply_adaptive_thresholds
 
 __all__ = [
     'DifferentialAbundanceTool',
@@ -36,5 +38,9 @@ __all__ = [
     'create_benchmark_datasets',
     'CompositionInformationFramework',
     'MaximumEntropySelector',
-    'run_information_theory_analysis'
+    'run_information_theory_analysis',
+    'InformationBasedPreprocessor',
+    'apply_information_preprocessing',
+    'AdaptiveThresholdSelector',
+    'apply_adaptive_thresholds'
 ]

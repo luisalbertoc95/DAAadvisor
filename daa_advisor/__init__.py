@@ -26,6 +26,9 @@ from .information_theory import CompositionInformationFramework, MaximumEntropyS
 from .preprocessing import InformationBasedPreprocessor, apply_information_preprocessing
 from .adaptive_thresholds import AdaptiveThresholdSelector, apply_adaptive_thresholds
 from .consensus import AdvancedConsensusAnalyzer, generate_advanced_consensus
+from .publication_benchmark import PublicationBenchmark, run_publication_benchmark
+from .publication_visualizations import PublicationVisualizer, create_publication_figures
+from .external_methods import ExternalMethodBenchmark, run_comprehensive_external_benchmark
 
 __all__ = [
     'DifferentialAbundanceTool',
@@ -45,5 +48,11 @@ __all__ = [
     'AdaptiveThresholdSelector',
     'apply_adaptive_thresholds',
     'AdvancedConsensusAnalyzer',
-    'generate_advanced_consensus'
+    'generate_advanced_consensus',
+    'PublicationBenchmark',
+    'run_publication_benchmark',
+    'PublicationVisualizer', 
+    'create_publication_figures',
+    'ExternalMethodBenchmark',
+    'run_comprehensive_external_benchmark'
 ]

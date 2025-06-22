@@ -29,6 +29,7 @@ from .consensus import AdvancedConsensusAnalyzer, generate_advanced_consensus
 from .publication_benchmark import PublicationBenchmark, run_publication_benchmark
 from .publication_visualizations import PublicationVisualizer, create_publication_figures
 from .external_methods import ExternalMethodBenchmark, run_comprehensive_external_benchmark
+from .real_data_collection import RealDataCollector, download_real_datasets
 
 __all__ = [
     'DifferentialAbundanceTool',
@@ -54,5 +55,7 @@ __all__ = [
     'PublicationVisualizer', 
     'create_publication_figures',
     'ExternalMethodBenchmark',
-    'run_comprehensive_external_benchmark'
+    'run_comprehensive_external_benchmark',
+    'RealDataCollector',
+    'download_real_datasets'
 ]

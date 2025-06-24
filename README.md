@@ -16,6 +16,8 @@ An intelligent tool that automatically selects the best statistical method for y
 - **🎯 Advanced Consensus Analysis**: Sophisticated voting strategies with confidence scoring and agreement metrics
 - **📈 Rich Visualizations**: Interactive HTML dashboards, method comparisons, and publication-ready plots
 - **🧮 Information Theory Framework**: Complete entropy-based analysis with Jensen-Shannon divergence (✅ Validated)
+- **🔄 Cross-Validation Framework**: Real vs synthetic data comparison with curatedMetagenomicData integration (✅ Implemented)
+- **🏆 Publication Benchmarking**: Comprehensive evaluation with bootstrap confidence intervals and literature validation
 - **⚡ Easy to Use**: Simple Python API with intelligent defaults and comprehensive testing
 
 ## Quick Start
@@ -242,6 +244,45 @@ Sample1   Control     A     25
 Sample2 Treatment     A     30
 Sample3   Control     B     28
 ```
+
+## 🔄 Cross-Validation Framework
+
+DAAadvisor includes a comprehensive cross-validation framework that compares method performance on both real and synthetic microbiome data.
+
+### Quick Start
+```bash
+# Activate virtual environment
+source daaadvisor_env/bin/activate
+
+# Run cross-validation with synthetic data (immediate)
+python run_cross_validation_benchmark.py --max-conditions 0
+
+# Download real data and cross-validate
+python run_cross_validation_benchmark.py --max-conditions 1
+
+# Publication benchmark with realistic synthetic data
+python run_publication_benchmark.py --quick --output results
+```
+
+### Features
+- **🧬 Real Data Integration**: Downloads from curatedMetagenomicData (Bioconductor) ✅ **WORKING**
+- **🎭 Realistic Synthetic Data**: Literature-based simulations with known ground truth
+- **📊 Method Comparison**: Performance correlation between real and synthetic datasets
+- **🏆 Bootstrap Validation**: Statistical rigor with confidence intervals
+- **📋 Comprehensive Reporting**: Automated cross-validation reports
+
+### Available Real Datasets
+- **IBD Studies**: HMP 2019 IBD Multi-omics Database ✅ **1,627 samples** (1,201 IBD + 426 controls)
+- **Colorectal Cancer**: Meta-analysis datasets
+- **Type 2 Diabetes**: Gut microbiome studies
+- **Obesity**: Multi-cohort studies
+- **Liver Cirrhosis**: Disease progression studies
+
+### Validation Results
+- **✅ Real Data Download**: Successfully downloads and processes curatedMetagenomicData
+- **✅ Cross-Validation**: Validates method performance across real and synthetic datasets
+- **✅ Literature Validation**: Confirms known biomarkers (Faecalibacterium, Escherichia)
+- **✅ Publication Ready**: Bootstrap confidence intervals and comprehensive reporting
 
 ## Contributing
 

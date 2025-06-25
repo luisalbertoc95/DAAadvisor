@@ -12,7 +12,7 @@ import numpy as np
 # Set up the figure with high resolution
 plt.rcParams['figure.dpi'] = 300
 plt.rcParams['savefig.dpi'] = 300
-plt.rcParams['font.size'] = 9
+plt.rcParams['font.size'] = 11
 plt.rcParams['font.family'] = 'sans-serif'
 
 fig, ax = plt.subplots(1, 1, figsize=(18, 20))
@@ -142,7 +142,7 @@ ax.text(7, 20.25, 'From Raw Data to Publication-Ready Results',
 
 # Input section
 create_modern_box(
-    5.5, 18, 3, 1.2,
+    5.5, 18, 3, 1.5,
     "Data Input",
     "Your microbiome dataset",
     [
@@ -208,46 +208,11 @@ create_modern_box(
     colors['consensus'], "🤝"
 )
 
-# Results section
-results_box = FancyBboxPatch(
-    (2, 8.5), 10, 2.8,
-    boxstyle="round,pad=0.2",
-    facecolor=colors['output'],
-    edgecolor=colors['text'],
-    linewidth=3,
-    zorder=2
-)
-ax.add_patch(results_box)
-
-# Results shadow
-results_shadow = FancyBboxPatch(
-    (2.1, 8.4), 10, 2.8,
-    boxstyle="round,pad=0.2",
-    facecolor='#D8DEE9',
-    alpha=0.3,
-    zorder=1
-)
-ax.add_patch(results_shadow)
-
-ax.text(7, 10.8, '🎯 Your Results: Ready for Science', 
-        ha='center', va='center', fontweight='bold', fontsize=14, color=colors['text'])
-
-results_content = [
-    "📈 Individual Method Results: See what each statistical test found",
-    "🏆 Consensus Findings: Features agreed upon by multiple methods", 
-    "📊 Confidence Levels: How reliable is each result? (with uncertainty)",
-    "📋 Executive Summary: Clear recommendations for your next steps"
-]
-
-y_pos = 10.3
-for item in results_content:
-    ax.text(2.5, y_pos, item, ha='left', va='center', fontsize=10, 
-            color=colors['text'], fontweight='500')
-    y_pos -= 0.35
+# Results section - removed as requested
 
 # Add sophisticated arrows with labels
-create_modern_arrow(7, 18, 3.5, 18.3, "Raw\nMicrobiome\nData")
-create_modern_arrow(7, 18, 10.5, 18.3, "Dataset\nCharacteristics")
+create_modern_arrow(6.5, 18, 3.5, 18.3, "Raw\nMicrobiome\nData")
+create_modern_arrow(7.5, 18, 10.5, 18.3, "Dataset\nCharacteristics")
 
 create_modern_arrow(3.25, 15.5, 3.25, 14.8, "Data\nProfile")
 create_modern_arrow(10.75, 15.5, 10.75, 14.8, "Method\nRecommendation")
@@ -255,12 +220,9 @@ create_modern_arrow(10.75, 15.5, 10.75, 14.8, "Method\nRecommendation")
 create_modern_arrow(6, 16.9, 8, 16.9, "Profiling\nResults", curve=0.3)
 create_modern_arrow(6, 13.4, 8, 13.4, "Statistical\nResults", curve=0.3)
 
-create_modern_arrow(3.25, 12, 5, 11.3, "Method-Specific\nFindings")
-create_modern_arrow(10.75, 12, 9, 11.3, "Consensus\nResults")
-
-# Key characteristics panel
+# Key characteristics panel - moved up to fill space
 char_box = FancyBboxPatch(
-    (1, 5.5), 12, 2.5,
+    (1, 8), 12, 2.5,
     boxstyle="round,pad=0.2",
     facecolor=colors['light_bg'],
     edgecolor=colors['text'],
@@ -269,7 +231,7 @@ char_box = FancyBboxPatch(
 )
 ax.add_patch(char_box)
 
-ax.text(7, 7.7, '💡 Why This Framework is Powerful', 
+ax.text(7, 10.2, '💡 Why This Framework is Powerful', 
         ha='center', va='center', fontweight='bold', fontsize=13, color=colors['text'])
 
 characteristics = [
@@ -279,15 +241,15 @@ characteristics = [
     "📊 Publication Ready: Bootstrap confidence intervals + comprehensive reporting included"
 ]
 
-y_pos = 7.3
+y_pos = 9.8
 for char in characteristics:
-    ax.text(1.5, y_pos, char, ha='left', va='center', fontsize=10, 
+    ax.text(1.5, y_pos, char, ha='left', va='center', fontsize=11, 
             color=colors['text'], fontweight='500')
     y_pos -= 0.35
 
-# Footer with integration info
+# Footer with integration info - moved up to fill space
 footer_box = FancyBboxPatch(
-    (2, 3.5), 10, 1.5,
+    (2, 6), 10, 1.5,
     boxstyle="round,pad=0.15",
     facecolor='white',
     edgecolor=colors['accent'],
@@ -296,25 +258,25 @@ footer_box = FancyBboxPatch(
 )
 ax.add_patch(footer_box)
 
-ax.text(7, 4.6, '🔗 Complete R Integration', 
+ax.text(7, 7.1, '🔗 Complete R Integration', 
         ha='center', va='center', fontweight='bold', fontsize=12, color=colors['accent'])
-ax.text(7, 4.1, 'Seamlessly integrates 6 statistical methods via rpy2', 
-        ha='center', va='center', fontsize=10, style='italic', color=colors['text'])
-ax.text(7, 3.8, 'Wilcoxon • ALDEx2 • DESeq2 • edgeR • metagenomeSeq • ANCOM-BC', 
-        ha='center', va='center', fontsize=9, color=colors['text'])
+ax.text(7, 6.6, 'Seamlessly integrates 6 statistical methods via rpy2', 
+        ha='center', va='center', fontsize=11, style='italic', color=colors['text'])
+ax.text(7, 6.3, 'Wilcoxon • ALDEx2 • DESeq2 • edgeR • metagenomeSeq • ANCOM-BC', 
+        ha='center', va='center', fontsize=10, color=colors['text'])
 
 # Usage example
-ax.text(7, 2.8, '🚀 Simple Usage', 
+ax.text(7, 5.3, '🚀 Simple Usage', 
         ha='center', va='center', fontweight='bold', fontsize=12, color=colors['text'])
-ax.text(7, 2.4, 'tool = DifferentialAbundanceTool()', 
+ax.text(7, 4.9, 'tool = DifferentialAbundanceTool()', 
         ha='center', va='center', fontsize=10, family='monospace', 
         color=colors['text'])
-ax.text(7, 2.1, 'results = tool.analyze(count_table, metadata, use_consensus=True)', 
+ax.text(7, 4.6, 'results = tool.analyze(count_table, metadata, use_consensus=True)', 
         ha='center', va='center', fontsize=10, family='monospace', 
         color=colors['text'])
 
 # Final footer
-ax.text(7, 1.2, 'DAAadvisor: Making Microbiome Analysis Intelligent and Reproducible', 
+ax.text(7, 3.7, 'DAAadvisor: Making Microbiome Analysis Intelligent and Reproducible', 
         ha='center', va='center', fontsize=12, fontweight='bold', color=colors['header'])
 
 plt.tight_layout()

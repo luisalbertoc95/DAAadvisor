@@ -15,9 +15,9 @@ plt.rcParams['savefig.dpi'] = 300
 plt.rcParams['font.size'] = 10
 plt.rcParams['font.family'] = 'sans-serif'
 
-fig, ax = plt.subplots(1, 1, figsize=(14, 16))
-ax.set_xlim(0, 10)
-ax.set_ylim(0, 18)
+fig, ax = plt.subplots(1, 1, figsize=(16, 18))
+ax.set_xlim(0, 12)
+ax.set_ylim(0, 20)
 ax.axis('off')
 
 # Color scheme
@@ -61,8 +61,8 @@ def create_step_box(x, y, width, height, title, details, color, step_num):
                 ha='left', va='top', fontsize=9, wrap=True)
         detail_y -= 0.35
 
-def create_arrow(start_x, start_y, end_x, end_y, style='->'):
-    """Create connection arrow between steps"""
+def create_arrow(start_x, start_y, end_x, end_y, style='->', label='', label_pos='mid'):
+    """Create connection arrow between steps with optional label"""
     arrow = ConnectionPatch(
         (start_x, start_y), (end_x, end_y), 
         "data", "data",
@@ -70,16 +70,31 @@ def create_arrow(start_x, start_y, end_x, end_y, style='->'):
         mutation_scale=20, fc="black", linewidth=2
     )
     ax.add_patch(arrow)
+    
+    # Add label if provided
+    if label:
+        if label_pos == 'mid':
+            label_x = (start_x + end_x) / 2
+            label_y = (start_y + end_y) / 2
+        elif label_pos == 'start':
+            label_x = start_x + 0.2
+            label_y = start_y + 0.1
+        else:  # 'end'
+            label_x = end_x - 0.2
+            label_y = end_y - 0.1
+            
+        ax.text(label_x, label_y, label, ha='center', va='center', 
+                fontsize=8, bbox=dict(boxstyle="round,pad=0.3", facecolor='white', alpha=0.8))
 
 # Title
-ax.text(5, 17, 'DAAadvisor: Core Analysis Framework', 
+ax.text(6, 19, 'DAAadvisor: Core Analysis Framework', 
         ha='center', va='center', fontsize=18, fontweight='bold')
-ax.text(5, 16.5, 'Intelligent Method Selection & Multi-Method Analysis Pipeline', 
+ax.text(6, 18.5, 'Intelligent Method Selection & Multi-Method Analysis Pipeline', 
         ha='center', va='center', fontsize=12, style='italic')
 
 # Step 1: Data Input & Profiling
 create_step_box(
-    0.5, 14, 4, 2.2,
+    0.5, 15.5, 4.5, 2.5,
     "📊 Data Assessment & Profiling",
     [
         "Sparsity analysis & zero-inflation detection",
@@ -92,7 +107,7 @@ create_step_box(
 
 # Step 2: Information-Theoretic Selection
 create_step_box(
-    5.5, 14, 4, 2.2,
+    7, 15.5, 4.5, 2.5,
     "🧮 Information-Theoretic Selection",
     [
         "Maximum entropy principle optimization",
@@ -105,7 +120,7 @@ create_step_box(
 
 # Step 3: Multi-Method Analysis
 create_step_box(
-    0.5, 11.2, 4, 2.2,
+    0.5, 12, 4.5, 2.5,
     "🔬 Multi-Method Statistical Analysis",
     [
         "Wilcoxon: Non-parametric testing",
@@ -118,7 +133,7 @@ create_step_box(
 
 # Step 4: Advanced Consensus
 create_step_box(
-    5.5, 11.2, 4, 2.2,
+    7, 12, 4.5, 2.5,
     "🤝 Advanced Consensus Analysis",
     [
         "Sophisticated voting strategies",
@@ -131,19 +146,19 @@ create_step_box(
 
 # Input Data Box
 input_box = FancyBboxPatch(
-    (2, 16.2), 6, 0.8,
+    (3, 17.7), 6, 0.8,
     boxstyle="round,pad=0.1",
     facecolor=colors['input'],
     edgecolor='black',
     linewidth=2
 )
 ax.add_patch(input_box)
-ax.text(5, 16.6, '📋 Input: Count Table + Metadata', 
+ax.text(6, 18.1, '📋 Input: Count Table + Metadata', 
         ha='center', va='center', fontweight='bold', fontsize=12)
 
 # Results Box  
 results_box = FancyBboxPatch(
-    (2, 8.5), 6, 2,
+    (2.5, 8.5), 7, 2.5,
     boxstyle="round,pad=0.1",
     facecolor=colors['output'],
     edgecolor='black',
@@ -151,35 +166,35 @@ results_box = FancyBboxPatch(
 )
 ax.add_patch(results_box)
 
-ax.text(5, 10, '📈 Core Analysis Results', 
+ax.text(6, 10.5, '📈 Core Analysis Results', 
         ha='center', va='center', fontweight='bold', fontsize=14)
 
 results_details = [
-    "• Significant features with p-values & effect sizes",
-    "• Method-specific results & performance metrics", 
-    "• Consensus calls with confidence scores",
-    "• Statistical summary & method recommendations"
+    "• Individual method results: p-values, effect sizes, significant features",
+    "• Method-specific performance metrics & diagnostic information", 
+    "• Consensus calls with confidence scores (if consensus enabled)",
+    "• Statistical summary & method recommendations for final use"
 ]
 
-y_pos = 9.6
+y_pos = 10.1
 for detail in results_details:
-    ax.text(2.2, y_pos, detail, ha='left', va='center', fontsize=10)
-    y_pos -= 0.25
+    ax.text(2.7, y_pos, detail, ha='left', va='center', fontsize=10)
+    y_pos -= 0.3
 
-# Add connecting arrows
+# Add connecting arrows with labels
 # Input to processing
-create_arrow(5, 16.2, 2.5, 16.2)  # Input to Step 1
-create_arrow(5, 16.2, 7.5, 16.2)  # Input to Step 2
+create_arrow(5, 17.7, 2.8, 18, label='Count Matrix +\nMetadata', label_pos='mid')  # Input to Step 1
+create_arrow(7, 17.7, 9.2, 18, label='Data\nCharacteristics', label_pos='mid')  # Input to Step 2
 
 # Between steps
-create_arrow(4.5, 15.1, 5.5, 15.1)  # 1 to 2
-create_arrow(2.5, 14, 2.5, 13.4)    # 1 to 3
-create_arrow(7.5, 14, 7.5, 13.4)    # 2 to 4
-create_arrow(4.5, 12.3, 5.5, 12.3)  # 3 to 4
+create_arrow(5, 16.7, 7, 16.7, label='Data Profile +\nRecommendations', label_pos='mid')  # 1 to 2
+create_arrow(2.75, 15.5, 2.75, 14.5, label='Method\nSelection', label_pos='mid')    # 1 to 3
+create_arrow(9.25, 15.5, 9.25, 14.5, label='Selected Methods +\nConfidence', label_pos='mid')    # 2 to 4
+create_arrow(5, 13.2, 7, 13.2, label='Individual Method\nResults', label_pos='mid')  # 3 to 4
 
 # To results
-create_arrow(2.5, 11.2, 4, 10.5)    # 3 to results
-create_arrow(7.5, 11.2, 6, 10.5)    # 4 to results
+create_arrow(2.75, 12, 4.5, 11, label='Method-Specific\nResults', label_pos='mid')    # 3 to results
+create_arrow(9.25, 12, 7.5, 11, label='Consensus Results +\nConfidence Scores', label_pos='mid')    # 4 to results
 
 # Add method icons
 method_y = 6.5
@@ -188,11 +203,11 @@ methods = [
     "📈 edgeR", "🔍 metagenomeSeq", "⚖️ ANCOM-BC"
 ]
 
-ax.text(5, 7.5, 'Integrated Statistical Methods', 
+ax.text(6, 7.5, 'Integrated Statistical Methods', 
         ha='center', va='center', fontweight='bold', fontsize=12)
 
 for i, method in enumerate(methods):
-    x_pos = 1.5 + (i % 3) * 2.5
+    x_pos = 2 + (i % 3) * 2.5
     y_pos = method_y - (i // 3) * 0.5
     
     method_box = FancyBboxPatch(
@@ -206,11 +221,11 @@ for i, method in enumerate(methods):
     ax.text(x_pos, y_pos, method, ha='center', va='center', fontsize=9)
 
 # Add R Integration note
-ax.text(5, 5, '🔗 Complete R Integration via rpy2', 
+ax.text(6, 5, '🔗 Complete R Integration via rpy2', 
         ha='center', va='center', fontsize=11, style='italic', color='blue')
 
 # Add footer
-ax.text(5, 0.5, 'DAAadvisor Core Framework: Intelligent Method Selection & Analysis', 
+ax.text(6, 0.5, 'DAAadvisor Core Framework: Intelligent Method Selection & Analysis', 
         ha='center', va='center', fontsize=12, fontweight='bold')
 
 plt.tight_layout()

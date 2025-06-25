@@ -8,6 +8,16 @@
 
 An intelligent tool that automatically selects the best statistical method for your microbiome differential abundance analysis based on data characteristics.
 
+## 🎯 **Complete Framework Overview**
+
+| Component | Status | Description |
+|-----------|--------|-------------|
+| **🧠 Intelligent Analysis** | ✅ Complete | Information-theoretic method selection with 6 statistical methods |
+| **🧬 Real Data Integration** | ✅ Validated | 1,627 IBD samples from curatedMetagenomicData |
+| **🔄 Cross-Validation** | ✅ Implemented | Real vs synthetic data comparison pipeline |
+| **🏆 Publication Ready** | ✅ Validated | Bootstrap confidence intervals + literature confirmation |
+| **📊 Comprehensive Reporting** | ✅ Complete | Interactive dashboards + journal-ready figures |
+
 ## Features
 
 - **🧠 Intelligent Method Selection**: Information-theoretic framework with maximum entropy principle for optimal method selection
@@ -81,6 +91,10 @@ BiocManager::install(c("ALDEx2", "ANCOMBC", "DESeq2", "edgeR", "metagenomeSeq"))
 ```
 
 ## 🧠 Comprehensive Methodology Framework
+
+<p align="center">
+  <img src="daaadvisor_workflow_diagram.png" alt="DAAadvisor Complete Workflow" width="800"/>
+</p>
 
 DAAadvisor implements a comprehensive **8-step framework** with cross-validation and real data integration:
 

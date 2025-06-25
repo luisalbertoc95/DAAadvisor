@@ -34,31 +34,31 @@ def create_core_workflow():
     
     # Add nodes
     dot.node('input', 
-             '📊 Data Input\\n\\nCount Table + Metadata\\nYour microbiome dataset', 
+             '📊 Data Input\\n\\nCount Table: samples × features matrix\\nMetadata: experimental conditions\\nSupports: ASV/16S, gene, viral data', 
              fillcolor=colors['input'], fontcolor='#2E3440')
     
     dot.node('profiling', 
-             '🔍 Smart Data Profiling\\n\\nAutomatic characterization\\n• Sparsity assessment\\n• Data type detection\\n• Quality metrics', 
+             '🔍 Comprehensive Data Profiling\\n\\nStatistical characterization:\\n• Zero-inflation: quantify sparsity (0-95%)\\n• Distribution analysis: mean, variance, skewness\\n• Library size normalization assessment\\n• Compositional bias detection\\n• Data type classification (ASV/gene/viral)', 
              fillcolor=colors['profiling'], fontcolor='#2E3440')
     
     dot.node('selection', 
-             '🧠 AI-Powered Method Selection\\n\\nInformation theory optimization\\n• Maximum entropy principle\\n• Divergence analysis\\n• Confidence scoring', 
+             '🧮 Information-Theoretic Method Selection\\n\\nMathematical optimization framework:\\n• Maximum entropy principle: Method* = argmax H(X|θ)\\n• Jensen-Shannon divergence: between-group analysis\\n• CLR transformation compatibility assessment\\n• Method suitability scoring (0-100%)\\n• Uncertainty quantification', 
              fillcolor=colors['selection'], fontcolor='#2E3440')
     
     dot.node('analysis', 
-             '⚡ Parallel Statistical Testing\\n\\nMulti-method analysis\\n• Wilcoxon (non-parametric)\\n• ALDEx2 (compositional)\\n• DESeq2/edgeR (count-based)', 
+             '⚡ Parallel Multi-Method Analysis\\n\\nSimultaneous statistical testing:\\n• Wilcoxon: rank-based non-parametric\\n• ALDEx2: CLR + Monte Carlo (n=128)\\n• DESeq2: negative binomial GLM\\n• edgeR: TMM normalization + QLF\\n• metagenomeSeq: zero-inflated log-normal\\n• ANCOM-BC: bias-corrected compositional', 
              fillcolor=colors['analysis'], fontcolor='white')
     
     dot.node('consensus', 
-             '🤝 Intelligent Result Integration\\n\\nAdvanced consensus\\n• Voting strategies\\n• Agreement metrics\\n• Confidence scoring', 
+             '🤝 Advanced Consensus Integration\\n\\nMulti-method result synthesis:\\n• Voting strategies: simple, weighted, ranked\\n• Cohen kappa: inter-method agreement\\n• Effect size concordance analysis\\n• P-value consistency assessment\\n• Confidence intervals: bootstrap (n=50-100)\\n• Final recommendation scoring', 
              fillcolor=colors['consensus'], fontcolor='#2E3440')
     
     # Add edges with labels
-    dot.edge('input', 'profiling', label='Raw\\nMicrobiome\\nData')
-    dot.edge('input', 'selection', label='Dataset\\nCharacteristics')
-    dot.edge('profiling', 'analysis', label='Data\\nProfile')
-    dot.edge('selection', 'consensus', label='Method\\nRecommendation')
-    dot.edge('analysis', 'consensus', label='Statistical\\nResults')
+    dot.edge('input', 'profiling', label='Raw microbiome\\ncount matrix')
+    dot.edge('input', 'selection', label='Data characteristics\\n& constraints')
+    dot.edge('profiling', 'analysis', label='Statistical profile\\n& recommendations')
+    dot.edge('selection', 'consensus', label='Optimal method\\nselection & weights')
+    dot.edge('analysis', 'consensus', label='Individual method\\nresults & p-values')
     
     return dot
 
@@ -87,42 +87,42 @@ def create_validation_workflow():
     
     # Add nodes
     dot.node('input', 
-             '⬆️ From Core Analysis\\n\\nStatistical results\\nMethod performance', 
+             '⬆️ From Core Analysis\\n\\nStatistical results: p-values, effect sizes\\nMethod performance: success rates, runtimes\\nConsensus calls: agreement scores', 
              fillcolor=colors['input'], fontcolor='#2E3440')
     
     dot.node('real_data', 
-             '🧬 Real-World Data\\n\\ncuratedMetagenomicData\\n• IBD: 1,627 samples\\n• Literature biomarkers\\n• Quality control', 
+             '🧬 Real-World Data Integration\\n\\nData source: curatedMetagenomicData (Bioconductor)\\n• IBD study: 1,627 samples (1,201 IBD + 426 controls)\\n• Ground truth: published biomarkers (Faecalibacterium, Escherichia)\\n• Data format: TreeSummarizedExperiment\\n• Quality control: sample alignment validation\\n• Metadata: disease status, demographics', 
              fillcolor=colors['real_data'], fontcolor='#2E3440')
     
     dot.node('synthetic', 
-             '🎭 Controlled Simulation\\n\\nRealistic synthetic data\\n• Literature-based effects\\n• Known ground truth\\n• Controlled conditions', 
+             '🎭 Controlled Data Simulation\\n\\nRealistic microbiome simulation:\\n• Literature effect sizes: IBD (log2FC: 0.5-2.0)\\n• Compositional structure: Dirichlet-multinomial\\n• Known differential features: 50-200 taxa\\n• Sparsity patterns: 70-90% zeros\\n• Sample sizes: 20-200 per group\\n• Controlled confounders: batch, age, gender', 
              fillcolor=colors['synthetic'], fontcolor='#2E3440')
     
     dot.node('cross_val', 
-             '🔄 Cross-Validation Engine\\n\\nPerformance comparison\\n• Real vs synthetic\\n• Bootstrap testing\\n• Robustness assessment', 
+             '🔄 Cross-Validation Framework\\n\\nMethod performance evaluation:\\n• Real vs synthetic correlation: Pearson r\\n• Bootstrap iterations: 50-100 replicates\\n• Performance metrics: sensitivity, specificity, F1\\n• Ground truth recovery: known feature detection\\n• Robustness: consistency across datasets\\n• Statistical testing: paired t-tests, Wilcoxon', 
              fillcolor=colors['cross_val'], fontcolor='#2E3440')
     
     dot.node('validation', 
-             '🏆 Publication Validation\\n\\nScientific rigor\\n• Statistical confidence\\n• Literature confirmation\\n• Comprehensive metrics', 
+             '🏆 Publication-Quality Validation\\n\\nScientific rigor assessment:\\n• Statistical confidence: 95% bootstrap CI\\n• Literature confirmation: biomarker validation\\n• Performance metrics: AUROC, AUPRC, MCC\\n• Effect size validation: Cohen d, log2FC\\n• FDR control: Benjamini-Hochberg correction\\n• Reproducibility: seed-controlled analysis', 
              fillcolor=colors['validation'], fontcolor='white')
     
     dot.node('reporting', 
-             '📊 Comprehensive Reporting\\n\\nPublication-ready output\\n• Interactive dashboards\\n• Journal figures\\n• Statistical summaries', 
+             '📊 Comprehensive Reporting\\n\\nPublication-ready documentation:\\n• Interactive HTML dashboards (plotly)\\n• High-resolution figures (300 DPI, PNG/SVG)\\n• Statistical tables: CSV/Excel export\\n• Method comparison matrices\\n• Bootstrap result summaries\\n• Reproducible analysis scripts', 
              fillcolor=colors['reporting'], fontcolor='#2E3440')
     
     dot.node('output', 
-             '🎯 Publication-Ready Results\\n\\nValidated scientific output\\n• Real-world tested\\n• Literature confirmed\\n• Statistical confidence', 
+             '🎯 Validated Scientific Results\\n\\nPeer-review ready output:\\n• Cross-validated performance (real + synthetic)\\n• Literature-confirmed biomarker detection\\n• Statistical significance: p < 0.05, FDR < 0.1\\n• Effect size confidence intervals\\n• Method reliability assessment\\n• Complete reproducibility documentation', 
              fillcolor=colors['output'], fontcolor='#2E3440')
     
     # Add edges
-    dot.edge('input', 'real_data', label='Core Results\\nfor Testing')
-    dot.edge('input', 'synthetic', label='Performance\\nBaseline')
-    dot.edge('real_data', 'cross_val', label='Real Dataset\\n+ Biomarkers')
-    dot.edge('synthetic', 'cross_val', label='Synthetic Dataset\\n+ Known Truth')
-    dot.edge('cross_val', 'validation', label='Performance\\nMetrics')
-    dot.edge('cross_val', 'reporting', label='Validation\\nResults')
-    dot.edge('validation', 'output', label='Scientific\\nValidation')
-    dot.edge('reporting', 'output', label='Reports +\\nVisualizations')
+    dot.edge('input', 'real_data', label='Core analysis results\\nfor validation testing')
+    dot.edge('input', 'synthetic', label='Method performance\\nbaseline metrics')
+    dot.edge('real_data', 'cross_val', label='Real dataset + literature\\nbiomarker ground truth')
+    dot.edge('synthetic', 'cross_val', label='Synthetic dataset +\\nknown differential features')
+    dot.edge('cross_val', 'validation', label='Cross-validation metrics\\n& performance correlation')
+    dot.edge('cross_val', 'reporting', label='Bootstrap results &\\nstatistical summaries')
+    dot.edge('validation', 'output', label='Publication-quality\\nvalidation results')
+    dot.edge('reporting', 'output', label='Complete documentation\\n& visualizations')
     
     return dot
 

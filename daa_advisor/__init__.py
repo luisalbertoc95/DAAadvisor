@@ -30,6 +30,7 @@ from .publication_benchmark import PublicationBenchmark, run_publication_benchma
 from .publication_visualizations import PublicationVisualizer, create_publication_figures
 from .external_methods import ExternalMethodBenchmark, run_comprehensive_external_benchmark
 from .real_data_collection import RealDataCollector, download_real_datasets
+from .curated_data_downloader import CuratedDataDownloader, download_curated_data
 
 __all__ = [
     'DifferentialAbundanceTool',
@@ -57,5 +58,7 @@ __all__ = [
     'ExternalMethodBenchmark',
     'run_comprehensive_external_benchmark',
     'RealDataCollector',
-    'download_real_datasets'
+    'download_real_datasets',
+    'CuratedDataDownloader',
+    'download_curated_data'
 ]

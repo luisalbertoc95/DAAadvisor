@@ -11,7 +11,7 @@ import numpy as np
 from typing import Dict, List, Tuple, Optional, Any
 import logging
 from pathlib import Path
-import requests
+# import requests  # Not available in current environment
 import zipfile
 import io
 import tarfile

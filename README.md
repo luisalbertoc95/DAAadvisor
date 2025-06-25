@@ -90,22 +90,22 @@ install.packages("BiocManager")
 BiocManager::install(c("ALDEx2", "ANCOMBC", "DESeq2", "edgeR", "metagenomeSeq"))
 ```
 
-## 🧠 Sophisticated Methodology Framework
+## 🧠 Professional Methodology Framework
 
-DAAadvisor implements a comprehensive **8-step framework** with modern, intelligent design:
+DAAadvisor implements a comprehensive **8-step framework** with publication-quality visualization:
 
 ### 🔬 **Intelligent Core Analysis Framework**
 *From raw data to publication-ready results with AI-powered method selection*
 
 <p align="center">
-  <img src="daaadvisor_enhanced_core_workflow.png" alt="DAAadvisor Enhanced Core Analysis Framework" width="800"/>
+  <img src="daaadvisor_graphviz_core_workflow.png" alt="DAAadvisor Core Analysis Framework" width="600"/>
 </p>
 
 ### 🏆 **Scientific Validation Framework** 
 *Ensuring your results are publication-ready and reproducible*
 
 <p align="center">
-  <img src="daaadvisor_enhanced_validation_workflow.png" alt="DAAadvisor Enhanced Validation Framework" width="800"/>
+  <img src="daaadvisor_graphviz_validation_workflow.png" alt="DAAadvisor Validation Framework" width="600"/>
 </p>
 
 ### 1. **📊 Data Assessment & Profiling**
